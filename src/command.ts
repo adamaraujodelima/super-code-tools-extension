@@ -13,11 +13,11 @@ export const buildCommand = (command: string, document: vscode.TextDocument, opt
 export const execPromise = (command: string): Promise<{ stdout: string, stderr: string }> => {
     return new Promise((resolve, reject) => {
         exec(command, (error, stdout, stderr) => {
-            if (error) {
-                reject({ stderr: error.message })
-            } else {
-                resolve({ stdout: stdout, stderr: '' })
+            if (error && error.signal) {
+                reject({ error, stdout, stderr })
             }
+
+            resolve({ stdout, stderr: ''})
         })
     })
 }
