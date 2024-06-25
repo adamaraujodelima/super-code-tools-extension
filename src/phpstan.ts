@@ -44,7 +44,8 @@ export const phpStanCheck = async (document: vscode.TextDocument): Promise<Issue
                 lineTo: message.line,
                 from: vscode.workspace.getConfiguration('editor').get('tabSize') as number,
                 to: 100,
-                message: message.message
+                message: message.message,
+                tool: 'phpstan'
             }
         })
     } catch (err) {

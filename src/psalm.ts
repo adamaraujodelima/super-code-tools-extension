@@ -19,9 +19,8 @@ export const psalmCheck = async (document: vscode.TextDocument): Promise<Issue[]
         const command = buildCommand('psalm-check', document, [
             '--output-format=json'
         ])
-        console.log(command)
+
         const result = await execPromise(command)
-        console.log('result', result)
         if (result.stderr) {
             console.error(`exec error: ${result.stderr}`)
             vscode.window.showErrorMessage('Error on psalm command', result.stderr)
@@ -29,9 +28,6 @@ export const psalmCheck = async (document: vscode.TextDocument): Promise<Issue[]
         }
 
         const output: Result[] = JSON.parse(result.stdout)
-
-        console.log(output)
-
         if (output.length === 0) {
             return []
         }
@@ -42,7 +38,8 @@ export const psalmCheck = async (document: vscode.TextDocument): Promise<Issue[]
                 lineTo: message.line_to,
                 from: message.column_from,
                 to: message.column_to,
-                message: message.message
+                message: message.message,
+                tool: 'psalm'
             }
         })
     } catch (err) {

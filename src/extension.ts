@@ -10,6 +10,7 @@ export type Issue = {
 	from: number
 	to: number
 	message: string
+	tool: string
 }
 
 const createDiagnostics = (issues: Issue[]) => {
@@ -19,7 +20,7 @@ const createDiagnostics = (issues: Issue[]) => {
 			new vscode.Position(issue.lineFrom - 1, issue.from),
 			new vscode.Position(issue.lineFrom - 1, issue.to)
 		)
-		diagnostics.push(new vscode.Diagnostic(range, issue.message, vscode.DiagnosticSeverity.Error))
+		diagnostics.push(new vscode.Diagnostic(range, `${issue.message} [${issue.tool}]`, vscode.DiagnosticSeverity.Error))
 	})
 	return diagnostics
 }
@@ -33,6 +34,11 @@ const runCommands = async (document: vscode.TextDocument) => {
 	]
 }
 
+const checkFiles = (document: vscode.TextDocument) => {
+	const path = document.uri.fsPath
+	return !path.includes('.git') && path.includes('.php') && !path.includes('vendor') && !path.includes('node_modules')
+}
+
 export function activate(context: vscode.ExtensionContext) {
 	const diagnosticCollection = vscode.languages.createDiagnosticCollection('super-code-tools')
 
@@ -41,16 +47,10 @@ export function activate(context: vscode.ExtensionContext) {
 	}))
 
 	vscode.workspace.onDidSaveTextDocument(async (document) => {
-		const path = document.uri.fsPath
-		if (!path.includes('.git') && path.includes('.php') && !path.includes('vendor') && !path.includes('node_modules')) {
-			diagnosticCollection?.set(document.uri, createDiagnostics(await runCommands(document)))
-		}
+		checkFiles(document) && diagnosticCollection?.set(document.uri, createDiagnostics(await runCommands(document)))
 	})
 
 	vscode.workspace.onDidOpenTextDocument(async (document) => {
-		const path = document.uri.fsPath
-		if (!path.includes('.git') && path.includes('.php') && !path.includes('vendor') && !path.includes('node_modules')) {
-			diagnosticCollection?.set(document.uri, createDiagnostics(await runCommands(document)))
-		}
+		checkFiles(document) && diagnosticCollection?.set(document.uri, createDiagnostics(await runCommands(document)))
 	})
 }

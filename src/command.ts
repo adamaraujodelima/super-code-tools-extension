@@ -3,11 +3,13 @@ import * as vscode from 'vscode'
 
 const imageName = 'adamaraujodelima/super-code-tools:1.1'
 
-export const buildCommand = (command: string, document: vscode.TextDocument, options: string[]) => {
+export const buildCommand = (tool: string, document: vscode.TextDocument, options: string[]): string => {
     const folder = vscode.workspace.workspaceFolders?.[0].uri.fsPath
     const volume = `${folder}:${folder}`
     const extraArguments = options ? options.join(' ') : ''
-    return `docker run --rm -v ${volume} ${imageName} sh -c "${command} ${extraArguments} ${document.uri.fsPath}"`
+    const command = `docker run --rm -v ${volume} ${imageName} sh -c "${tool} ${extraArguments} ${document.uri.fsPath}"`
+    console.log(command)
+    return command
 }
 
 export const execPromise = (command: string): Promise<{ stdout: string, stderr: string }> => {
