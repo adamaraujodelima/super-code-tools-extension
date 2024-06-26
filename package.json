@@ -12,6 +12,36 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "Super Code Tools",
+      "properties": {
+        "superCodeTools.image": {
+          "type": "string",
+          "default": "adamaraujodelima/super-code-tools:1.1",
+          "description": "The name of the Super Code Tools image to run"
+        },
+        "superCodeTools.phpcs": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable PHP Code Sniffer"
+        },
+        "superCodeTools.phpmd": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable PHP Mess Detector"
+        },
+        "superCodeTools.phpstan": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable PHPStan"
+        },
+        "superCodeTools.psalm": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Psalm"
+        }
+      }
+    },
     "commands": [
       {
         "command": "super-code-tools.run",

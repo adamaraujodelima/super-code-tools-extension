@@ -27,10 +27,10 @@ const createDiagnostics = (issues: Issue[]) => {
 
 const runCommands = async (document: vscode.TextDocument) => {
 	return [
-		// ...await phpcsCheck(document),
+		...await phpcsCheck(document),
 		...await psalmCheck(document),
-		// ...await phpmdCheck(document),
-		// ...await phpStanCheck(document),
+		...await phpStanCheck(document),
+		...await phpmdCheck(document),
 	]
 }
 

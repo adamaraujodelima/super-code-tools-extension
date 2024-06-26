@@ -23,6 +23,10 @@ type Result = {
 }
 
 export const phpcsCheck = async (document: vscode.TextDocument): Promise<Issue[]> => {
+    if (vscode.workspace.getConfiguration('superCodeTools').get('phpcs') === false) {
+        return []
+    }
+
     try {
         const command = buildCommand('phpcs-check', document, [
             '-q',

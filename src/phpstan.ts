@@ -21,6 +21,10 @@ type Result = {
 }
 
 export const phpStanCheck = async (document: vscode.TextDocument): Promise<Issue[]> => {
+    if (vscode.workspace.getConfiguration('superCodeTools').get('phpstan') === false) {
+        return []
+    }
+
     try {
         const command = buildCommand('phpstan-check', document, [
             '--error-format=json'

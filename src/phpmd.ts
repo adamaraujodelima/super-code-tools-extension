@@ -3,6 +3,10 @@ import * as vscode from 'vscode'
 import { Issue } from './extension'
 
 export const phpmdCheck = async (document: vscode.TextDocument): Promise<Issue[]> => {
+    if (vscode.workspace.getConfiguration('superCodeTools').get('phpmd') === false) {
+        return []
+    }
+
     try {
         const command = buildCommand('phpmd-check', document, [
             'json',

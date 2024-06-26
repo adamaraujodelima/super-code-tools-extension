@@ -15,6 +15,10 @@ type Result = {
 }
 
 export const psalmCheck = async (document: vscode.TextDocument): Promise<Issue[]> => {
+    if (vscode.workspace.getConfiguration('superCodeTools').get('psalm') === false) {
+        return []
+    }
+
     try {
         const command = buildCommand('psalm-check', document, [
             '--output-format=json'
