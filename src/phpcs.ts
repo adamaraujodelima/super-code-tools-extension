@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { buildCommand, execPromise } from './command'
+import { CommandResult, buildCommand, execPromise } from './command'
 import { Issue } from './extension'
 
 type Result = {
@@ -29,7 +29,7 @@ export const phpcsCheck = async (document: vscode.TextDocument): Promise<Issue[]
             '--report=json'
         ])
 
-        const result = await execPromise(command)
+        const result: CommandResult = await execPromise(command)
         if (result.stderr) {
             console.error(`exec error: ${result.stderr}`)
             vscode.window.showErrorMessage('Error on phpcs command', result.stderr)
@@ -60,6 +60,8 @@ export const phpcsCheck = async (document: vscode.TextDocument): Promise<Issue[]
         return issues
     } catch (err) {
         console.error(err)
+        const error = err as CommandResult
+        vscode.window.showErrorMessage('Error on PHPCS command', error.stderr)
         return []
     }
 }

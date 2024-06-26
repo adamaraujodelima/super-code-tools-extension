@@ -27,10 +27,10 @@ const createDiagnostics = (issues: Issue[]) => {
 
 const runCommands = async (document: vscode.TextDocument) => {
 	return [
-		...await phpcsCheck(document),
-		...await phpmdCheck(document),
-		...await phpStanCheck(document),
-		...await psalmCheck(document)
+		// ...await phpcsCheck(document),
+		...await psalmCheck(document),
+		// ...await phpmdCheck(document),
+		// ...await phpStanCheck(document),
 	]
 }
 
@@ -47,7 +47,9 @@ export function activate(context: vscode.ExtensionContext) {
 	}))
 
 	vscode.workspace.onDidSaveTextDocument(async (document) => {
-		checkFiles(document) && diagnosticCollection?.set(document.uri, createDiagnostics(await runCommands(document)))
+		const issues = await runCommands(document)
+		console.log(issues)
+		checkFiles(document) && diagnosticCollection?.set(document.uri, createDiagnostics(issues))
 	})
 
 	vscode.workspace.onDidOpenTextDocument(async (document) => {

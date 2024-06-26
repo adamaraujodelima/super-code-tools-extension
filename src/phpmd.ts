@@ -1,4 +1,4 @@
-import { buildCommand, execPromise } from './command'
+import { CommandResult, buildCommand, execPromise } from './command'
 import * as vscode from 'vscode'
 import { Issue } from './extension'
 
@@ -26,6 +26,8 @@ export const phpmdCheck = async (document: vscode.TextDocument): Promise<Issue[]
         return issues
     } catch (err) {
         console.error(err)
+        const error = err as CommandResult
+        vscode.window.showErrorMessage('Error on PHPMD command', error.stderr)
         return []
     }
 }

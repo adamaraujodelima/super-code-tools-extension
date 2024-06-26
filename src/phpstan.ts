@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { buildCommand, execPromise } from './command'
+import { CommandResult, buildCommand, execPromise } from './command'
 import { Issue } from './extension'
 
 type Result = {
@@ -50,6 +50,8 @@ export const phpStanCheck = async (document: vscode.TextDocument): Promise<Issue
         })
     } catch (err) {
         console.error(err)
+        const error = err as CommandResult
+        vscode.window.showErrorMessage('Error on PHPSTAN command', error.stderr)
         return []
     }
 }

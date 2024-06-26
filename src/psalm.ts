@@ -1,4 +1,4 @@
-import { buildCommand, execPromise } from "./command"
+import { CommandResult, buildCommand, execPromise } from "./command"
 import * as vscode from 'vscode'
 import { Issue } from "./extension"
 
@@ -44,6 +44,8 @@ export const psalmCheck = async (document: vscode.TextDocument): Promise<Issue[]
         })
     } catch (err) {
         console.error(err)
+        const error = err as CommandResult
+        vscode.window.showErrorMessage('Error on PSALM command', error.stderr)
         return []
     }
 }

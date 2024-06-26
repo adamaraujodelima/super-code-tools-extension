@@ -3,6 +3,8 @@ import * as vscode from 'vscode'
 
 const imageName = 'adamaraujodelima/super-code-tools:1.1'
 
+export type CommandResult = { stdout: string, stderr: string }
+
 export const buildCommand = (tool: string, document: vscode.TextDocument, options: string[]): string => {
     const folder = vscode.workspace.workspaceFolders?.[0].uri.fsPath
     const volume = `${folder}:${folder}`
@@ -12,10 +14,10 @@ export const buildCommand = (tool: string, document: vscode.TextDocument, option
     return command
 }
 
-export const execPromise = (command: string): Promise<{ stdout: string, stderr: string }> => {
+export const execPromise = (command: string): Promise<CommandResult> => {
     return new Promise((resolve, reject) => {
         exec(command, (error, stdout, stderr) => {
-            if (error && error.signal) {
+            if (error && !stdout) {
                 reject({ error, stdout, stderr })
             }
 
