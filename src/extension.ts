@@ -56,15 +56,17 @@ export function activate(context: vscode.ExtensionContext) {
 	}))
 
 	vscode.workspace.onDidSaveTextDocument(async (document) => {
-		const issues = await runCommands(document)
-		checkFiles(document) && diagnosticCollection?.set(document.uri, createDiagnostics(issues))
+		if (checkFiles(document)) {
+			diagnosticCollection?.set(document.uri, createDiagnostics(await runCommands(document)))
+		}
 	})
 
 	vscode.workspace.onDidOpenTextDocument(async (document) => {
-		checkFiles(document) && diagnosticCollection?.set(document.uri, createDiagnostics(await runCommands(document)))
+		if (checkFiles(document)) {
+			diagnosticCollection?.set(document.uri, createDiagnostics(await runCommands(document)))
+		}
 	})
 
-	// stop container when vscode is closed
 	context.subscriptions.push(vscode.window.onDidCloseTerminal(() => {
 		stopContainer()
 	}))
