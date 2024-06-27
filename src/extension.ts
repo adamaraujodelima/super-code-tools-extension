@@ -3,6 +3,7 @@ import { phpStanCheck } from './phpstan'
 import { psalmCheck } from './psalm'
 import { phpmdCheck } from './phpmd'
 import { phpcsCheck } from './phpcs'
+import { startContainer, stopContainer } from './command'
 
 export type Issue = {
 	lineFrom: number
@@ -29,8 +30,8 @@ const createDiagnostics = (issues: Issue[]) => {
 const runCommands = async (document: vscode.TextDocument) => {
 	return [
 		...await phpcsCheck(document),
-		...await psalmCheck(document),
 		...await phpStanCheck(document),
+		...await psalmCheck(document),
 		...await phpmdCheck(document),
 	]
 }
@@ -43,7 +44,14 @@ const checkFiles = (document: vscode.TextDocument) => {
 export function activate(context: vscode.ExtensionContext) {
 	const diagnosticCollection = vscode.languages.createDiagnosticCollection('super-code-tools')
 
-	context.subscriptions.push(vscode.commands.registerCommand('super-code-tools.run', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('super-code-tools.run', async () => {
+		try {
+			await startContainer()
+		} catch (error) {
+			console.error(error)
+			vscode.window.showErrorMessage('Error on start container', error.message)
+		}
+
 		vscode.window.showInformationMessage('Welcome to Super Code Tools!')
 	}))
 
@@ -55,4 +63,13 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.workspace.onDidOpenTextDocument(async (document) => {
 		checkFiles(document) && diagnosticCollection?.set(document.uri, createDiagnostics(await runCommands(document)))
 	})
+
+	// stop container when vscode is closed
+	context.subscriptions.push(vscode.window.onDidCloseTerminal(() => {
+		stopContainer()
+	}))
+}
+
+export async function deactivate() {
+	await stopContainer()
 }
