@@ -39,6 +39,11 @@
           "type": "boolean",
           "default": true,
           "description": "Enable Psalm"
+        },
+        "superCodeTools.workspace.folder": {
+          "type": "string",
+          "default": "/workspace",
+          "description": "The folder inside the container where the application root is located"
         }
       }
     },
