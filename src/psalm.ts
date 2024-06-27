@@ -1,6 +1,7 @@
 import { CommandResult, buildCommand, execPromise } from "./command"
 import * as vscode from 'vscode'
 import { Issue } from "./extension"
+import { readConfig } from "./configuration"
 
 type Result = {
     column_from: number
@@ -15,7 +16,7 @@ type Result = {
 }
 
 export const psalmCheck = async (document: vscode.TextDocument): Promise<Issue[]> => {
-    if (vscode.workspace.getConfiguration('superCodeTools').get('psalm') === false) {
+    if (readConfig('psalm') === false) {
         return []
     }
 
@@ -35,6 +36,8 @@ export const psalmCheck = async (document: vscode.TextDocument): Promise<Issue[]
         if (output.length === 0) {
             return []
         }
+
+        console.log(output)
 
         return output.map(message => {
             return {

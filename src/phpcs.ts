@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 import { CommandResult, buildCommand, execPromise } from './command'
 import { Issue } from './extension'
+import { readConfig } from './configuration'
 
 type Result = {
     totals: {
@@ -23,7 +24,7 @@ type Result = {
 }
 
 export const phpcsCheck = async (document: vscode.TextDocument): Promise<Issue[]> => {
-    if (vscode.workspace.getConfiguration('superCodeTools').get('phpcs') === false) {
+    if (readConfig('phpcs') === false) {
         return []
     }
 

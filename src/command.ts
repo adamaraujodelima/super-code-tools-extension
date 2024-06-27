@@ -1,15 +1,17 @@
 import { exec } from 'child_process'
 import * as vscode from 'vscode'
-
-const imageName = 'adamaraujodelima/super-code-tools:1.1'
+import { readConfig } from './configuration'
 
 export type CommandResult = { stdout: string, stderr: string }
 
 export const buildCommand = (tool: string, document: vscode.TextDocument, options: string[]): string => {
-    const folder = vscode.workspace.workspaceFolders?.[0].uri.fsPath
-    const volume = `${folder}:${folder}`
+    const imageName = readConfig('image') as string
+    const workspaceDir = readConfig('workspace.folder') as string
+    const parentDir = vscode.workspace.workspaceFolders?.[0].uri.fsPath
+    const appDir = workspaceDir ? `${parentDir}/${workspaceDir}` : parentDir
+    const volume = `${appDir}:${appDir}`
     const extraArguments = options ? options.join(' ') : ''
-    const command = `docker run --rm -v ${volume} ${imageName} sh -c "${tool} ${extraArguments} ${document.uri.fsPath}"`
+    const command = `docker run --rm -v ${volume} -w ${appDir} ${imageName} sh -c "${tool} ${extraArguments} ${document.uri.fsPath}"`
     console.log(command)
     return command
 }

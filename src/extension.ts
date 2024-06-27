@@ -14,11 +14,12 @@ export type Issue = {
 }
 
 const createDiagnostics = (issues: Issue[]) => {
+	console.log(issues)
 	const diagnostics: vscode.Diagnostic[] = []
 	issues.forEach(issue => {
 		const range = new vscode.Range(
 			new vscode.Position(issue.lineFrom - 1, issue.from),
-			new vscode.Position(issue.lineFrom - 1, issue.to)
+			new vscode.Position(issue.lineTo - 1, issue.to)
 		)
 		diagnostics.push(new vscode.Diagnostic(range, `${issue.message} [${issue.tool}]`, vscode.DiagnosticSeverity.Error))
 	})
@@ -48,7 +49,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 	vscode.workspace.onDidSaveTextDocument(async (document) => {
 		const issues = await runCommands(document)
-		console.log(issues)
 		checkFiles(document) && diagnosticCollection?.set(document.uri, createDiagnostics(issues))
 	})
 
