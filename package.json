@@ -42,7 +42,7 @@
         },
         "superCodeTools.workspace.folder": {
           "type": "string",
-          "default": "/workspace",
+          "default": "app",
           "description": "The folder inside the container where the application root is located"
         }
       }

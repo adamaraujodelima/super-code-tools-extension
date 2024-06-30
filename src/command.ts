@@ -12,7 +12,7 @@ export const startContainer = async () => {
     const parentDir = vscode.workspace.workspaceFolders?.[0].uri.fsPath
     const appDir = workspaceDir ? `${parentDir}/${workspaceDir}` : parentDir
     const volume = `${appDir}:${appDir}`
-    const command = `docker run -d --rm --name ${containerName} -v ${volume} -w ${appDir}  ${imageName}`
+    const command = `docker run -d --rm -it --name ${containerName} -v ${volume} -w ${appDir}  ${imageName}`
     return execPromise(command)
 }
 

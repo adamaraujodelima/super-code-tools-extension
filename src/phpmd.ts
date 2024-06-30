@@ -2,6 +2,22 @@ import { CommandResult, buildCommand, execPromise } from './command'
 import * as vscode from 'vscode'
 import { Issue } from './extension'
 
+type Result = {
+    files: {
+        file: string,
+        violations: {
+            beginLine: number,
+            endLine: number,
+            rule: string,
+            ruleset: string,
+            priority: number,
+            description: string,
+            class: string,
+            package: string,
+        }[]
+    }[]
+}
+
 export const phpmdCheck = async (document: vscode.TextDocument): Promise<Issue[]> => {
     if (vscode.workspace.getConfiguration('superCodeTools').get('phpmd') === false) {
         return []
@@ -10,10 +26,7 @@ export const phpmdCheck = async (document: vscode.TextDocument): Promise<Issue[]
     try {
         const command = buildCommand('phpmd-check', document, [
             'json',
-            'cleancode,codesize,controversial,design,naming,unusedcode'
         ])
-
-        console.log('phpmd-check', command)
 
         const result = await execPromise(command)
         if (result.stderr) {
@@ -23,9 +36,20 @@ export const phpmdCheck = async (document: vscode.TextDocument): Promise<Issue[]
         }
 
         const issues: Issue[] = []
-        const output = JSON.parse(result.stdout)
+        const output: Result = JSON.parse(result.stdout)
 
-        console.log('phpmd-check', output)
+        output.files.forEach(file => {
+            file.violations.forEach(violation => {
+                issues.push({
+                    lineFrom: violation.beginLine,
+                    lineTo: violation.endLine,
+                    message: violation.description,
+                    from: 0,
+                    to: 0,
+                    tool: 'PHPMD'
+                })
+            })
+        })
 
         return issues
     } catch (err) {
