@@ -24,7 +24,6 @@ export const stopContainer = async () => {
 export const buildCommand = (tool: string, document: vscode.TextDocument, options: string[]): string => {
     const extraArguments = options ? options.join(' ') : ''
     const command = `docker exec ${containerName} sh -c "${tool} ${extraArguments} ${document.uri.fsPath}"`
-    console.log(command)
     return command
 }
 

@@ -14,9 +14,10 @@ export type Issue = {
 	tool: string
 }
 
+const diagnostics: vscode.Diagnostic[] = []
+
 const createDiagnostics = (issues: Issue[]) => {
 	console.log(issues)
-	const diagnostics: vscode.Diagnostic[] = []
 	issues.forEach(issue => {
 		const range = new vscode.Range(
 			new vscode.Position(issue.lineFrom - 1, issue.from),
@@ -24,16 +25,6 @@ const createDiagnostics = (issues: Issue[]) => {
 		)
 		diagnostics.push(new vscode.Diagnostic(range, `${issue.message} [${issue.tool}]`, vscode.DiagnosticSeverity.Error))
 	})
-	return diagnostics
-}
-
-const runCommands = async (document: vscode.TextDocument) => {
-	return [
-		...await phpcsCheck(document),
-		...await phpStanCheck(document),
-		...await psalmCheck(document),
-		...await phpmdCheck(document),
-	]
 }
 
 const checkFiles = (document: vscode.TextDocument) => {
@@ -42,7 +33,29 @@ const checkFiles = (document: vscode.TextDocument) => {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-	const diagnosticCollection = vscode.languages.createDiagnosticCollection('super-code-tools')
+	const diagnosticCollection = vscode.languages.createDiagnosticCollection('SuperCodeTools')
+	context.subscriptions.push(diagnosticCollection)
+
+	const runCommands = async (document: vscode.TextDocument) => {
+		diagnosticCollection.clear()
+		diagnostics.length = 0
+		phpcsCheck(document).then((issues) => {
+			createDiagnostics(issues)
+			diagnosticCollection.set(document.uri, diagnostics)
+		})
+		phpStanCheck(document).then((issues) => {
+			createDiagnostics(issues)
+			diagnosticCollection.set(document.uri, diagnostics)
+		})
+		psalmCheck(document).then((issues) => {
+			createDiagnostics(issues)
+			diagnosticCollection.set(document.uri, diagnostics)
+		})
+		phpmdCheck(document).then((issues) => {
+			createDiagnostics(issues)
+			diagnosticCollection.set(document.uri, diagnostics)
+		})
+	}
 
 	context.subscriptions.push(vscode.commands.registerCommand('super-code-tools.run', async () => {
 		try {
@@ -57,13 +70,13 @@ export function activate(context: vscode.ExtensionContext) {
 
 	vscode.workspace.onDidSaveTextDocument(async (document) => {
 		if (checkFiles(document)) {
-			diagnosticCollection?.set(document.uri, createDiagnostics(await runCommands(document)))
+			runCommands(document)
 		}
 	})
 
 	vscode.workspace.onDidOpenTextDocument(async (document) => {
 		if (checkFiles(document)) {
-			diagnosticCollection?.set(document.uri, createDiagnostics(await runCommands(document)))
+			runCommands(document)
 		}
 	})
 
