@@ -32,57 +32,50 @@ const checkFiles = (document: vscode.TextDocument) => {
 	return !path.includes('.git') && path.includes('.php') && !path.includes('vendor') && !path.includes('node_modules')
 }
 
-export function activate(context: vscode.ExtensionContext) {
-	const diagnosticCollection = vscode.languages.createDiagnosticCollection('SuperCodeTools')
-	context.subscriptions.push(diagnosticCollection)
+export async function activate(context: vscode.ExtensionContext) {
+	try {
+		await startContainer()
 
-	const runCommands = async (document: vscode.TextDocument) => {
-		diagnosticCollection.clear()
-		diagnostics.length = 0
-		phpcsCheck(document).then((issues) => {
-			createDiagnostics(issues)
-			diagnosticCollection.set(document.uri, diagnostics)
+		const diagnosticCollection = vscode.languages.createDiagnosticCollection('SuperCodeTools')
+		context.subscriptions.push(diagnosticCollection)
+
+		const runCommands = async (document: vscode.TextDocument) => {
+			diagnosticCollection.clear()
+			diagnostics.length = 0
+			phpcsCheck(document).then((issues) => {
+				createDiagnostics(issues)
+				diagnosticCollection.set(document.uri, diagnostics)
+			})
+			phpStanCheck(document).then((issues) => {
+				createDiagnostics(issues)
+				diagnosticCollection.set(document.uri, diagnostics)
+			})
+			psalmCheck(document).then((issues) => {
+				createDiagnostics(issues)
+				diagnosticCollection.set(document.uri, diagnostics)
+			})
+			phpmdCheck(document).then((issues) => {
+				createDiagnostics(issues)
+				diagnosticCollection.set(document.uri, diagnostics)
+			})
+		}
+
+		vscode.workspace.onDidSaveTextDocument(async (document) => {
+			if (checkFiles(document)) {
+				runCommands(document)
+			}
 		})
-		phpStanCheck(document).then((issues) => {
-			createDiagnostics(issues)
-			diagnosticCollection.set(document.uri, diagnostics)
+
+		vscode.workspace.onDidOpenTextDocument(async (document) => {
+			if (checkFiles(document)) {
+				runCommands(document)
+			}
 		})
-		psalmCheck(document).then((issues) => {
-			createDiagnostics(issues)
-			diagnosticCollection.set(document.uri, diagnostics)
-		})
-		phpmdCheck(document).then((issues) => {
-			createDiagnostics(issues)
-			diagnosticCollection.set(document.uri, diagnostics)
-		})
+	} catch (err) {
+		console.error(err)
+		const error = err as CommandResult
+		vscode.window.showErrorMessage('Error on start container', error.stderr)
 	}
-
-	context.subscriptions.push(vscode.commands.registerCommand('superCodeTools.run', async () => {
-		try {
-			await startContainer()
-			vscode.window.showInformationMessage('Welcome to Super Code Tools!')
-		} catch (err) {
-			console.error(err)
-			const error = err as CommandResult
-			vscode.window.showErrorMessage('Error on start container', error.stderr)
-		}
-	}))
-
-	vscode.workspace.onDidSaveTextDocument(async (document) => {
-		if (checkFiles(document)) {
-			runCommands(document)
-		}
-	})
-
-	vscode.workspace.onDidOpenTextDocument(async (document) => {
-		if (checkFiles(document)) {
-			runCommands(document)
-		}
-	})
-
-	context.subscriptions.push(vscode.window.onDidCloseTerminal(() => {
-		stopContainer()
-	}))
 }
 
 export async function deactivate() {

@@ -2,7 +2,9 @@
   "name": "super-code-tools",
   "displayName": "Super Code Tools",
   "description": "Run Super Code Tools container in your project. Availables tools: PHP Code Sniffer, PHP Mess Detector, PHPStan, Psalm",
+  "publisher": "adamaraujodelima",
   "version": "0.0.1",
+  "icon": "assets/super-code-tools-icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/adamaraujodelima/super-code-tools-extension"
@@ -13,7 +15,9 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage:php"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "configuration": {
