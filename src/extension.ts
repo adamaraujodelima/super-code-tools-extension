@@ -3,7 +3,7 @@ import { phpStanCheck } from './phpstan'
 import { psalmCheck } from './psalm'
 import { phpmdCheck } from './phpmd'
 import { phpcsCheck } from './phpcs'
-import { startContainer, stopContainer } from './command'
+import { CommandResult, startContainer, stopContainer } from './command'
 
 export type Issue = {
 	lineFrom: number
@@ -60,9 +60,10 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('super-code-tools.run', async () => {
 		try {
 			await startContainer()
-		} catch (error) {
-			console.error(error)
-			vscode.window.showErrorMessage('Error on start container', error.message)
+		} catch (err) {
+			console.error(err)
+			const error = err as CommandResult
+			vscode.window.showErrorMessage('Error on start container', error.stderr)
 		}
 
 		vscode.window.showInformationMessage('Welcome to Super Code Tools!')

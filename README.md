@@ -1,71 +1,77 @@
-# super-code-tools README
+# Super Code Tools Extension
 
-This is the README for your extension "super-code-tools". After writing up a brief description, we recommend including the following sections.
+This extension enables running PHP code analysis tools inside a Docker container. The extension integrates the following PHP tools:
+
+- PHP Code Sniffer
+- PHP Mess Detector
+- PHPStan
+- Psalm
+
+You can configure which tools to enable or disable through the extension settings. This extension requires Docker to be installed and running on your machine.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+- **PHP Code Sniffer**: Detects violations of a defined coding standard.
+- **PHP Mess Detector**: Finds possible problems in your code.
+- **PHPStan**: Performs static analysis of your PHP code.
+- **Psalm**: A static analysis tool for finding errors in PHP applications.
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- Docker must be installed and running on your machine.
+- Visual Studio Code.
 
-## Extension Settings
+## Configuration
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+You can enable or disable the desired tools in the extension settings. To access the settings, go to:
 
-For example:
+`File` > `Preferences` > `Settings` > `Extensions` > `PHP Tools Docker`
 
-This extension contributes the following settings:
+The available settings are:
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+- **Enable PHP Code Sniffer**: Toggle to enable or disable PHP Code Sniffer.
+- **Enable PHP Mess Detector**: Toggle to enable or disable PHP Mess Detector.
+- **Enable PHPStan**: Toggle to enable or disable PHPStan.
+- **Enable Psalm**: Toggle to enable or disable Psalm.
 
-## Known Issues
+## Usage
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+1. Open a PHP project in Visual Studio Code.
+2. Configure the extension settings to enable or disable the desired tools.
+3. Save your changes.
+4. The extension will automatically run the selected tools inside a Docker container and display the results in the Problems panel.
 
-## Release Notes
+## Example Settings
 
-Users appreciate release notes as you update your extension.
+Here is an example of how to configure the settings in your `settings.json` file:
 
-### 1.0.0
+```json
+{
+    "superCodeTools.phpcs": true,
+    "superCodeTools.phpmd": true,
+    "superCodeTools.phpstan": true,
+    "superCodeTools.psalm": true
+}
+```
 
-Initial release of ...
+## Troubleshooting
 
-### 1.0.1
+If you encounter issues with the extension, ensure that:
 
-Fixed issue #.
+- Docker is installed and running on your machine.
+- You have the necessary permissions to run Docker commands.
+- Your PHP project is correctly configured.
 
-### 1.1.0
+For further assistance, refer to the [Issues](https://github.com/adamaraujodelima/super-code-tools-extension/issues) section in the repository.
 
-Added features X, Y, and Z.
+## Contributing
+
+Contributions are welcome! Please fork the repository and submit a pull request.
 
 ---
 
-## Following extension guidelines
+For more information, visit the [GitHub repository](https://github.com/adamaraujodelima/super-code-tools-extension).
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+---
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+**Happy coding!**

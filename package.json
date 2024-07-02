@@ -1,8 +1,12 @@
 {
   "name": "super-code-tools",
-  "displayName": "super-code-tools",
-  "description": "Run Super Code Tools container in your project",
+  "displayName": "Super Code Tools",
+  "description": "Run Super Code Tools container in your project. Availables tools: PHP Code Sniffer, PHP Mess Detector, PHPStan, Psalm",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adamaraujodelima/super-code-tools-extension"
+  },
   "engines": {
     "vscode": "^1.87.0"
   },
