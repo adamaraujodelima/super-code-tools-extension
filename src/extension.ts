@@ -57,16 +57,15 @@ export function activate(context: vscode.ExtensionContext) {
 		})
 	}
 
-	context.subscriptions.push(vscode.commands.registerCommand('super-code-tools.run', async () => {
+	context.subscriptions.push(vscode.commands.registerCommand('superCodeTools.run', async () => {
 		try {
 			await startContainer()
+			vscode.window.showInformationMessage('Welcome to Super Code Tools!')
 		} catch (err) {
 			console.error(err)
 			const error = err as CommandResult
 			vscode.window.showErrorMessage('Error on start container', error.stderr)
 		}
-
-		vscode.window.showInformationMessage('Welcome to Super Code Tools!')
 	}))
 
 	vscode.workspace.onDidSaveTextDocument(async (document) => {

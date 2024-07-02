@@ -53,8 +53,8 @@
     },
     "commands": [
       {
-        "command": "super-code-tools.run",
-        "title": "Run the Super Code Tools container against the current project"
+        "command": "superCodeTools.run",
+        "title": "Activate Super Code Tools"
       }
     ]
   },
