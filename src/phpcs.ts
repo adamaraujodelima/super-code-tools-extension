@@ -57,7 +57,7 @@ export const phpcsCheck = async (document: vscode.TextDocument): Promise<Issue[]
                     from: message.column,
                     to: message.column,
                     message: message.message,
-                    tool: 'phpcs'
+                    tool: 'PHPCS'
                 })
             }
         }

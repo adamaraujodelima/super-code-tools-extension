@@ -46,7 +46,7 @@ export const psalmCheck = async (document: vscode.TextDocument): Promise<Issue[]
                 from: message.column_from,
                 to: message.column_to,
                 message: message.message,
-                tool: 'psalm'
+                tool: 'PSALM'
             }
         })
     } catch (err) {
