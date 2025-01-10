@@ -72,7 +72,7 @@
   },
   "devDependencies": {
     "@types/vscode": "^1.96.0",
-    "@types/mocha": "^10.0.6",
+    "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.18.0",
