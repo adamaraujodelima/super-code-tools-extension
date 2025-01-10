@@ -1,6 +1,7 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"    
+  - package-ecosystem: "npm"
+    directory: "/"
     schedule:
       interval: "daily"
     commit-message:
@@ -9,3 +10,4 @@ updates:
       - "dependencies"
       - "npm"
     open-pull-requests-limit: 10
+    rebase-strategy: "auto"
