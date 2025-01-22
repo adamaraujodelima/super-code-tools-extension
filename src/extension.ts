@@ -14,22 +14,57 @@ export type Issue = {
 	tool: string
 }
 
+const decorationType = vscode.window.createTextEditorDecorationType({
+	after: {
+		margin: '0 0 0 1rem',
+		textDecoration: 'none'
+	}
+})
+
 const diagnostics: vscode.Diagnostic[] = []
 
 const createDiagnostics = (issues: Issue[]) => {
 	console.log(issues)
+	const editor = vscode.window.activeTextEditor
+	const decorationsOptionsArray: vscode.DecorationOptions[] = []
+
 	issues.forEach(issue => {
 		const range = new vscode.Range(
 			new vscode.Position(issue.lineFrom - 1, issue.from),
 			new vscode.Position(issue.lineTo - 1, issue.to)
 		)
 		diagnostics.push(new vscode.Diagnostic(range, `${issue.message} [${issue.tool}]`, vscode.DiagnosticSeverity.Error))
+		if (editor) {
+			const decorationOptions: vscode.DecorationOptions = {
+				range: new vscode.Range(
+					new vscode.Position(issue.lineFrom - 1, issue.to),
+					new vscode.Position(issue.lineFrom - 1, issue.to)
+				),
+				renderOptions: {
+					after: {
+						contentText: `[${issue.tool}] ${issue.message}`,
+						color: 'rgba(255, 0, 0, 0.8)' // You can customize the color
+					}
+				}
+			}
+			decorationsOptionsArray.push(decorationOptions)
+		}
 	})
+
+	// if (editor) {
+	// 	editor.setDecorations(decorationType, decorationsOptionsArray)
+	// }
 }
 
 const checkFiles = (document: vscode.TextDocument) => {
 	const path = document.uri.fsPath
-	return !path.includes('.git') && path.includes('.php') && !path.includes('vendor') && !path.includes('node_modules')
+
+	return !path.includes('.git') &&
+		path.includes('.php') &&
+		!path.includes('vendor') &&
+		!path.includes('node_modules') &&
+		!path.includes('.vscode') &&
+		!path.match(/commit~\w+/)
 }
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -42,20 +77,14 @@ export async function activate(context: vscode.ExtensionContext) {
 		const runCommands = async (document: vscode.TextDocument) => {
 			diagnosticCollection.clear()
 			diagnostics.length = 0
-			phpcsCheck(document).then((issues) => {
-				createDiagnostics(issues)
-				diagnosticCollection.set(document.uri, diagnostics)
-			})
-			phpStanCheck(document).then((issues) => {
-				createDiagnostics(issues)
-				diagnosticCollection.set(document.uri, diagnostics)
-			})
-			psalmCheck(document).then((issues) => {
-				createDiagnostics(issues)
-				diagnosticCollection.set(document.uri, diagnostics)
-			})
-			phpmdCheck(document).then((issues) => {
-				createDiagnostics(issues)
+			Promise.all([
+				phpcsCheck(document),
+				phpStanCheck(document),
+				psalmCheck(document),
+				phpmdCheck(document)
+			]).then((issues) => {
+				const allIssues = issues.flat()
+				createDiagnostics(allIssues)
 				diagnosticCollection.set(document.uri, diagnostics)
 			})
 		}

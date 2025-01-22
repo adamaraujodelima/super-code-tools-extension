@@ -28,6 +28,7 @@ export const buildCommand = (tool: string, document: vscode.TextDocument, option
 }
 
 export const execPromise = (command: string): Promise<CommandResult> => {
+    console.info(`Executing command: ${command}`)
     return new Promise((resolve, reject) => {
         exec(command, (error, stdout, stderr) => {
             if (error && !stdout) {
