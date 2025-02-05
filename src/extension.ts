@@ -86,6 +86,10 @@ export async function activate(context: vscode.ExtensionContext) {
 				const allIssues = issues.flat()
 				createDiagnostics(allIssues)
 				diagnosticCollection.set(document.uri, diagnostics)
+			}).catch((err) => {
+				console.error(err)
+				const error = err as CommandResult
+				vscode.window.showErrorMessage('Error on start container', error.stderr)
 			})
 		}
 
