@@ -43,6 +43,8 @@ export const phpcsCheck = async (documents: vscode.TextDocument[]): Promise<Issu
 
         const output: Result = JSON.parse(result.stdout)
 
+        console.log('PHPCS Output', output)
+
         if (output.totals.errors === 0) {
             return []
         }
@@ -52,6 +54,7 @@ export const phpcsCheck = async (documents: vscode.TextDocument[]): Promise<Issu
             const messages = output.files[file].messages
             for (const message of messages) {
                 issues.push({
+                    file: `/${file}`,
                     lineFrom: message.line,
                     lineTo: message.line,
                     from: message.column,

@@ -41,6 +41,7 @@ export const psalmCheck = async (documents: vscode.TextDocument[]): Promise<Issu
 
         return output.map(message => {
             return {
+                file: message.file_path,
                 lineFrom: message.line_from,
                 lineTo: message.line_to,
                 from: message.column_from,

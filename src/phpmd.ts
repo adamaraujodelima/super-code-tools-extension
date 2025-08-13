@@ -41,6 +41,7 @@ export const phpmdCheck = async (documents: vscode.TextDocument[]): Promise<Issu
         output.files.forEach(file => {
             file.violations.forEach(violation => {
                 issues.push({
+                    file: file.file,
                     lineFrom: violation.beginLine,
                     lineTo: violation.endLine,
                     message: violation.description,
