@@ -74,36 +74,63 @@ export async function activate(context: vscode.ExtensionContext) {
 		const diagnosticCollection = vscode.languages.createDiagnosticCollection('SuperCodeTools')
 		context.subscriptions.push(diagnosticCollection)
 
-		const runCommands = async (document: vscode.TextDocument) => {
-			diagnosticCollection.clear()
-			diagnostics.length = 0
-			Promise.all([
-				phpcsCheck(document),
-				phpStanCheck(document),
-				psalmCheck(document),
-				phpmdCheck(document)
-			]).then((issues) => {
-				const allIssues = issues.flat()
-				createDiagnostics(allIssues)
-				diagnosticCollection.set(document.uri, diagnostics)
-			}).catch((err) => {
-				console.error(err)
-				const error = err as CommandResult
-				vscode.window.showErrorMessage('Error on start container', error.stderr)
-			})
-		}
+		// Keep track of pending documents to process
+		let pendingDocuments = new Set<vscode.TextDocument>();
+		let debounceTimer: NodeJS.Timeout | null = null;
+		const DEBOUNCE_DELAY = 500; // 500ms delay
 
-		vscode.workspace.onDidSaveTextDocument(async (document) => {
-			if (checkFiles(document)) {
-				runCommands(document)
-			}
-		})
+		const processPendingDocuments = async () => {
+			const documents = Array.from(pendingDocuments);
+			pendingDocuments.clear();
 
-		vscode.workspace.onDidOpenTextDocument(async (document) => {
-			if (checkFiles(document)) {
-				runCommands(document)
+			console.log('DocumentList', documents.map(doc => doc.uri.fsPath))
+
+			if (documents.length === 0) return;
+
+			diagnosticCollection.clear();
+			diagnostics.length = 0;
+
+
+			try {
+				const results = await Promise.all([
+					phpcsCheck(documents),
+					phpStanCheck(documents),
+					psalmCheck(documents),
+					phpmdCheck(documents)
+				]).then(issues => issues.flat());
+				console.log('Results', results)
+				// results.forEach(({ document, issues }) => {
+				// 	createDiagnostics(issues);
+				// 	diagnosticCollection.set(document.uri, [...diagnostics]);
+				// });
+			} catch (err) {
+				console.error(err);
+				const error = err as CommandResult;
+				vscode.window.showErrorMessage('Error processing documents', error.stderr);
 			}
-		})
+		};
+
+		const queueDocument = (document: vscode.TextDocument) => {
+			if (!checkFiles(document)) return;
+
+			pendingDocuments.add(document);
+
+			if (debounceTimer) {
+				clearTimeout(debounceTimer);
+			}
+
+			debounceTimer = setTimeout(() => {
+				processPendingDocuments();
+				debounceTimer = null;
+			}, DEBOUNCE_DELAY);
+		};
+
+		// Subscribe to document events
+		vscode.workspace.onDidSaveTextDocument(queueDocument);
+		vscode.workspace.onDidOpenTextDocument((document) => {
+			console.debug(`Opened document: ${document.uri.fsPath}`);
+			queueDocument(document);
+		});
 	} catch (err) {
 		console.error(err)
 		const error = err as CommandResult

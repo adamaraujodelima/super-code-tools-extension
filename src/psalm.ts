@@ -15,13 +15,13 @@ type Result = {
     link: string
 }
 
-export const psalmCheck = async (document: vscode.TextDocument): Promise<Issue[]> => {
+export const psalmCheck = async (documents: vscode.TextDocument[]): Promise<Issue[]> => {
     if (readConfig('psalm') === false) {
         return []
     }
 
     try {
-        const command = buildCommand('psalm-check', document, [
+        const command = buildCommand('psalm-check', documents, [
             '--output-format=json'
         ])
 

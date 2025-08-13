@@ -20,13 +20,13 @@ type Result = {
     }
 }
 
-export const phpStanCheck = async (document: vscode.TextDocument): Promise<Issue[]> => {
+export const phpStanCheck = async (documents: vscode.TextDocument[]): Promise<Issue[]> => {
     if (vscode.workspace.getConfiguration('superCodeTools').get('phpstan') === false) {
         return []
     }
 
     try {
-        const command = buildCommand('phpstan-check', document, [
+        const command = buildCommand('phpstan-check', documents, [
             '--error-format=json'
         ])
 
@@ -42,18 +42,23 @@ export const phpStanCheck = async (document: vscode.TextDocument): Promise<Issue
             return []
         }
 
-        return output.files[document.uri.fsPath].messages.map(message => {
-            return {
-                lineFrom: message.line,
-                lineTo: message.line,
-                from: vscode.workspace.getConfiguration('editor').get('tabSize') as number,
-                to: 100,
-                message: message.message,
-                tool: 'PHPSTAN'
-            }
-        })
+        console.log('PHPSTAN output:', output)
+
+        return []
+
+        // console.log(`PHPSTAN output for ${document.uri.fsPath}:`, output)
+
+        // return output.files[document.uri.fsPath].messages.map(message => {
+        //     return {
+        //         lineFrom: message.line,
+        //         lineTo: message.line,
+        //         from: vscode.workspace.getConfiguration('editor').get('tabSize') as number,
+        //         to: 100,
+        //         message: message.message,
+        //         tool: 'PHPSTAN'
+        //     }
+        // })
     } catch (err) {
-        console.error(err)
         const error = err as CommandResult
         vscode.window.showErrorMessage('Error on PHPSTAN command', error.stderr)
         return []

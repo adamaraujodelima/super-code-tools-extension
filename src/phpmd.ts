@@ -18,13 +18,13 @@ type Result = {
     }[]
 }
 
-export const phpmdCheck = async (document: vscode.TextDocument): Promise<Issue[]> => {
+export const phpmdCheck = async (documents: vscode.TextDocument[]): Promise<Issue[]> => {
     if (vscode.workspace.getConfiguration('superCodeTools').get('phpmd') === false) {
         return []
     }
 
     try {
-        const command = buildCommand('phpmd-check', document, [
+        const command = buildCommand('phpmd-check', documents, [
             'json',
         ])
 

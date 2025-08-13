@@ -23,13 +23,13 @@ type Result = {
     }
 }
 
-export const phpcsCheck = async (document: vscode.TextDocument): Promise<Issue[]> => {
+export const phpcsCheck = async (documents: vscode.TextDocument[]): Promise<Issue[]> => {
     if (readConfig('phpcs') === false) {
         return []
     }
 
     try {
-        const command = buildCommand('phpcs-check', document, [
+        const command = buildCommand('phpcs-check', documents, [
             '-q',
             '--report=json'
         ])
