@@ -43,8 +43,6 @@ export const phpcsCheck = async (documents: vscode.TextDocument[]): Promise<Issu
 
         const output: Result = JSON.parse(result.stdout)
 
-        console.log('PHPCS Output', output)
-
         if (output.totals.errors === 0) {
             return []
         }

@@ -12,7 +12,7 @@ export const startContainer = async () => {
     const parentDir = vscode.workspace.workspaceFolders?.[0].uri.fsPath
     const appDir = workspaceDir ? `${parentDir}/${workspaceDir}` : parentDir
     const volume = `${appDir}:${appDir}`
-    const command = `docker run -d --rm -it --name ${containerName} -v ${volume} -w ${appDir}  ${imageName}`
+    const command = `docker run -d --rm -it --name ${containerName} -v ${volume} -w ${appDir} ${imageName}`
     return execPromise(command)
 }
 
@@ -28,7 +28,7 @@ export const buildCommand = (tool: string, documents: vscode.TextDocument[], opt
 }
 
 export const execPromise = (command: string): Promise<CommandResult> => {
-    console.info(`Executing command: ${command}`)
+    console.log(`[SUPER-CODE-TOOLS] Executing command: ${command}`)
     return new Promise((resolve, reject) => {
         exec(command, (error, stdout, stderr) => {
             if (error && !stdout) {

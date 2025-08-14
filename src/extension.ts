@@ -81,6 +81,9 @@ export async function activate(context: vscode.ExtensionContext) {
 		const DEBOUNCE_DELAY = 500 // 500ms delay
 
 		const processPendingDocuments = async () => {
+			diagnosticCollection.clear()
+			diagnostics.length = 0
+
 			const documents = Array.from(pendingDocuments)
 			pendingDocuments.clear()
 
@@ -99,8 +102,6 @@ export async function activate(context: vscode.ExtensionContext) {
 				if (issues.length === 0) return
 
 				documents.forEach(document => {
-					diagnosticCollection.clear()
-					diagnostics.length = 0
 					const documentIssues = issues.filter(issue => {
 						console.log(issue.file, document.uri.fsPath)
 						return issue.file === document.uri.fsPath
