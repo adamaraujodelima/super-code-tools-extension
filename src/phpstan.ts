@@ -42,22 +42,27 @@ export const phpStanCheck = async (documents: vscode.TextDocument[]): Promise<Is
             return []
         }
 
-        console.log('PHPSTAN output:', output)
+        if (output.totals.errors > 0) {
+            vscode.window.showErrorMessage(`PHPSTAN ERROR: ${output.errors.join(', ')}`);
+            return []
+        }
 
-        return []
+        const issues: Issue[] = []
+        for (const [file, data] of Object.entries(output.files)) {
+            for (const message of data.messages) {
+                issues.push({
+                    file: file,
+                    lineFrom: message.line,
+                    lineTo: message.line,
+                    from: 0,
+                    to: 100,
+                    message: message.message,
+                    tool: 'PHPSTAN'
+                })
+            }
+        }
 
-        // console.log(`PHPSTAN output for ${document.uri.fsPath}:`, output)
-
-        // return output.files[document.uri.fsPath].messages.map(message => {
-        //     return {
-        //         lineFrom: message.line,
-        //         lineTo: message.line,
-        //         from: vscode.workspace.getConfiguration('editor').get('tabSize') as number,
-        //         to: 100,
-        //         message: message.message,
-        //         tool: 'PHPSTAN'
-        //     }
-        // })
+        return issues
     } catch (err) {
         const error = err as CommandResult
         vscode.window.showErrorMessage('Error on PHPSTAN command', error.stderr)
